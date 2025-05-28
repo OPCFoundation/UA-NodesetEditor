@@ -49,7 +49,7 @@ namespace CESMII.ProfileDesigner.Api.Controllers
         public async Task<IActionResult> GetPendingApprovalAsync()
         {
             // TODO implement search/filter/pagination
-            var pendingNodeSetsResult = await _dalCloudLib.GetNodeSetsPendingApprovalAsync(100, null, false, null);
+            var pendingNodeSetsResult = await _dalCloudLib.GetNodeSetsPendingApprovalAsync(1000, null, false, null);
             if (pendingNodeSetsResult == null)
             {
                 return BadRequest($"No records found.");

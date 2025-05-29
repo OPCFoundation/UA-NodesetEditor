@@ -26,10 +26,21 @@ function AdminCloudLibApprovalList() {
     const _activeAccount = instance.getActiveAccount();
     const _scrollToRef = useRef(null);
     const [_dataRows, setDataRows] = useState({
-        all: [], itemCount: 0, listView: true
+        all: [], 
+        itemCount: 0, 
+        listView: true,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        cursor: null
     });
     const _userPreferences = { pageSize: 25};
-    const [_pager, setPager] = useState({ currentPage: 1, pageSize: _userPreferences.pageSize, searchVal: null });
+    const [_pager, setPager] = useState({ 
+        currentPage: 1, 
+        pageSize: _userPreferences.pageSize, 
+        searchVal: null,
+        cursor: null,
+        pageBackwards: false
+    });
     const { loadingProps, setLoadingProps } = useLoadingContext();
     const [_refreshData, setRefreshData] = useState(0);
     const [_approvalModal, setApprovalModal] = useState({ show: false, item: null, approveState: AppSettings.ProfileStateEnum.Unknown });
@@ -45,19 +56,44 @@ function AdminCloudLibApprovalList() {
         //console.log(generateLogMessageString('handleOnSearchChange||Search value: ' + val, CLASS_NAME));
 
         //this will trigger a fetch from the API to pull the data for the filtered criteria
-        setPager({ ..._pager, currentPage: 1, searchVal: val });
+        setPager({ 
+            ..._pager, 
+            currentPage: 1, 
+            searchVal: val,
+            cursor: null,
+            pageBackwards: false
+        });
     };
 
     const onChangePage = (currentPage, pageSize) => {
         console.log(generateLogMessageString(`onChangePage||Current Page: ${currentPage}, Page Size: ${pageSize}`, CLASS_NAME));
 
+        // Calculate if we're going forward or backward
+        const pageBackwards = currentPage < _pager.currentPage;
+        
+        // For cursor-based pagination, we need to handle navigation differently
+        let newCursor = null;
+        if (pageBackwards && _dataRows.hasPreviousPage) {
+            // Going backward - we'd need to implement reverse cursor logic
+            // For now, reset to beginning if going to page 1
+            newCursor = currentPage === 1 ? null : _pager.cursor;
+        } else if (!pageBackwards && _dataRows.hasNextPage) {
+            // Going forward - use the end cursor
+            newCursor = _dataRows.cursor;
+        }
+
         //this will trigger a fetch from the API to pull the data for the filtered criteria
-        setPager({ ..._pager, currentPage: currentPage, pageSize: pageSize });
+        setPager({ 
+            ..._pager, 
+            currentPage: currentPage, 
+            pageSize: pageSize,
+            cursor: newCursor,
+            pageBackwards: pageBackwards
+        });
 
         //scroll screen to top of grid on page change
-        ////scroll a bit higher than the top edge so we get some of the header in the view
+        //scroll a bit higher than the top edge so we get some of the header in the view
         window.scrollTo({ top: (_scrollToRef.current.offsetTop - 120), behavior: 'smooth' });
-        //scrollToRef.current.scrollIntoView();
 
         //preserve choice in local storage
         //setUserPreferencesPageSize(pageSize);
@@ -74,14 +110,24 @@ function AdminCloudLibApprovalList() {
             const url = `cloudlibrary/pendingapprovals`;
             console.log(generateLogMessageString(`useEffect||fetchData||${url}`, CLASS_NAME));
 
-            const data = { Query: _pager.searchVal, Skip: (_pager.currentPage - 1) * _pager.pageSize, Take: _pager.pageSize };
+            const data = { 
+                Query: _pager.searchVal, 
+                Skip: _pager.searchVal ? (_pager.currentPage - 1) * _pager.pageSize : 0, // Only use Skip for search
+                Take: _pager.pageSize,
+                Cursor: _pager.cursor,
+                PageBackwards: _pager.pageBackwards
+            };
+
             await axiosInstance.post(url, data).then(result => {
                 if (result.status === 200) {
-
                     //set state on fetch of data
                     setDataRows({
                         ..._dataRows,
-                        all: result.data.data, itemCount: result.data.count
+                        all: result.data.data, 
+                        itemCount: result.data.count,
+                        hasNextPage: result.data.hasNextPage || false,
+                        hasPreviousPage: result.data.hasPreviousPage || false,
+                        cursor: result.data.endCursor
                     });
 
                     //hide a spinner
@@ -120,7 +166,7 @@ function AdminCloudLibApprovalList() {
     }, [_pager, _refreshData]);
 
     //-------------------------------------------------------------------
-    // Region: Event Handling - delete item
+    // Region: Event Handling - approval actions
     //-------------------------------------------------------------------
     const onApprovalStart = (item) => {
         console.log(generateLogMessageString('onApprovalStart', CLASS_NAME));
@@ -148,7 +194,7 @@ function AdminCloudLibApprovalList() {
         //show a spinner
         setLoadingProps({ isLoading: true, message: "" });
 
-        //perform delete call
+        //perform approval call
         const data = { id: _approvalModal.item.cloudLibraryId, approveState: _approvalModal.approveState, approvalDescription: approvalData.description };
         const url = `cloudlibrary/approve`;
         axiosInstance.post(url, data)  //api allows one or many
@@ -202,10 +248,26 @@ function AdminCloudLibApprovalList() {
         );
     }
 
-    //render pagination ui
+    //render pagination ui - updated to handle cursor-based pagination
     const renderPagination = () => {
         if (_dataRows == null || _dataRows.all.length === 0) return;
-        return <GridPager currentPage={_pager.currentPage} pageSize={_pager.pageSize} itemCount={_dataRows.itemCount} onChangePage={onChangePage} />
+        
+        // For search results, use traditional skip/take pagination
+        // For non-search, use cursor-based pagination
+        const showPagination = _pager.searchVal ? 
+            _dataRows.itemCount > _pager.pageSize :
+            (_dataRows.hasNextPage || _dataRows.hasPreviousPage || _pager.currentPage > 1);
+            
+        if (!showPagination) return null;
+        
+        return <GridPager 
+            currentPage={_pager.currentPage} 
+            pageSize={_pager.pageSize} 
+            itemCount={_dataRows.itemCount} 
+            onChangePage={onChangePage}
+            hasNextPage={_dataRows.hasNextPage}
+            hasPreviousPage={_dataRows.hasPreviousPage}
+        />
     }
 
     //render the main grid
@@ -247,7 +309,7 @@ function AdminCloudLibApprovalList() {
         );
     };
 
-    //render the delete modal when show flag is set to true
+    //render the approval modal when show flag is set to true
     //callbacks are tied to each button click to proceed or cancel
     const renderChangeApprovalStatusConfirmation = () => {
 
@@ -322,6 +384,7 @@ function AdminCloudLibApprovalList() {
                     {(_dataRows.itemCount != null && _dataRows.itemCount > 0) && 
                         <>
                             <span className="px-2 ml-auto font-weight-bold">{_dataRows.itemCount}{_dataRows.itemCount === 1 ? ' item' : ' items'}</span>
+                            {_dataRows.hasNextPage && <span className="px-2 small text-muted">(more available)</span>}
                         </>
                     }
                 </div>

@@ -41,37 +41,101 @@ namespace CESMII.ProfileDesigner.Api.Controllers
             _cloudLibUtil = cloudLibUtil;
         }
 
+        // New model for pagination parameters
+        public class PendingApprovalsFilterModel
+        {
+            public string Query { get; set; }
+            public int Skip { get; set; } = 0;
+            public int Take { get; set; } = 25;
+            public string Cursor { get; set; }
+            public bool PageBackwards { get; set; } = false;
+        }
 
         [HttpPost, Route("pendingapprovals")]
         [Authorize(Roles = "cesmii.profiledesigner.admin")]
         [ProducesResponseType(200, Type = typeof(DALResult<CloudLibProfileModel>))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> GetPendingApprovalAsync()
+        public async Task<IActionResult> GetPendingApprovalAsync([FromBody] PendingApprovalsFilterModel model)
         {
-            // TODO implement search/filter/pagination
-            var pendingNodeSetsResult = await _dalCloudLib.GetNodeSetsPendingApprovalAsync(100, null, false, null);
-            if (pendingNodeSetsResult == null)
+            // Set defaults if model is null
+            if (model == null)
             {
-                return BadRequest($"No records found.");
+                model = new PendingApprovalsFilterModel();
             }
 
-            DALResult<CloudLibProfileModel> result = new DALResult<CloudLibProfileModel>
+            // Validate Take parameter to prevent excessive requests
+            if (model.Take > 100)
             {
-                Count = pendingNodeSetsResult.Nodes.Count(),
-                Data = pendingNodeSetsResult.Nodes
-                        .OrderBy(x => x.ProfileState)
-                        .ThenBy(x => (string.IsNullOrEmpty(x.Title) 
-                                ? x.Namespace.Replace("https://","").Replace("http://", "") : x.Title).Trim())
-                        .ThenBy(x => x.Namespace.Replace("https://", "").Replace("http://", "").Trim())
-                        .ThenBy(x => x.PublishDate)
-                        .ToList(),
-                EndCursor = pendingNodeSetsResult.PageInfo.EndCursor,
-                StartCursor = pendingNodeSetsResult.PageInfo.StartCursor,
-                HasNextPage = pendingNodeSetsResult.PageInfo.HasNextPage,
-                HasPreviousPage = pendingNodeSetsResult.PageInfo.HasPreviousPage,
-            };
+                model.Take = 100;
+            }
+            if (model.Take <= 0)
+            {
+                model.Take = 25;
+            }
 
-            return Ok(result);
+            try
+            {
+                var pendingNodeSetsResult = await _dalCloudLib.GetNodeSetsPendingApprovalAsync(
+                    model.Take, 
+                    model.Cursor, 
+                    model.PageBackwards, 
+                    additionalProperty: new AdditionalProperty 
+                    { 
+                        Name = ICloudLibDal<CloudLibProfileModel>.strCESMIIUserInfo, 
+                        Value = $"PD{base.DalUserToken.UserId}" 
+                    });
+
+                if (pendingNodeSetsResult == null)
+                {
+                    return BadRequest($"No records found.");
+                }
+
+                // Apply search filter if provided
+                var filteredNodes = pendingNodeSetsResult.Nodes.AsEnumerable();
+                if (!string.IsNullOrEmpty(model.Query))
+                {
+                    var query = model.Query.ToLower();
+                    filteredNodes = filteredNodes.Where(x => 
+                        (x.Title != null && x.Title.ToLower().Contains(query)) ||
+                        (x.Namespace != null && x.Namespace.ToLower().Contains(query)) ||
+                        (x.Description != null && x.Description.ToLower().Contains(query)) ||
+                        (x.ContributorName != null && x.ContributorName.ToLower().Contains(query)) ||
+                        (x.License != null && x.License.ToLower().Contains(query)) ||
+                        (x.Author != null && x.Author.DisplayName != null && x.Author.DisplayName.ToLower().Contains(query))
+                    );
+                }
+
+                // Apply skip/take for client-side pagination if search is applied
+                if (!string.IsNullOrEmpty(model.Query) && model.Skip > 0)
+                {
+                    filteredNodes = filteredNodes.Skip(model.Skip);
+                }
+
+                var resultList = filteredNodes
+                    .OrderBy(x => x.ProfileState)
+                    .ThenBy(x => (string.IsNullOrEmpty(x.Title) 
+                            ? x.Namespace.Replace("https://","").Replace("http://", "") : x.Title).Trim())
+                    .ThenBy(x => x.Namespace.Replace("https://", "").Replace("http://", "").Trim())
+                    .ThenBy(x => x.PublishDate)
+                    .ToList();
+
+                DALResult<CloudLibProfileModel> result = new DALResult<CloudLibProfileModel>
+                {
+                    Count = string.IsNullOrEmpty(model.Query) ? pendingNodeSetsResult.TotalCount : resultList.Count,
+                    Data = resultList,
+                    EndCursor = pendingNodeSetsResult.PageInfo.EndCursor,
+                    StartCursor = pendingNodeSetsResult.PageInfo.StartCursor,
+                    HasNextPage = pendingNodeSetsResult.PageInfo.HasNextPage,
+                    HasPreviousPage = pendingNodeSetsResult.PageInfo.HasPreviousPage,
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving pending approvals");
+                return StatusCode(500, "Error retrieving pending approvals");
+            }
         }
 
         /// <summary>

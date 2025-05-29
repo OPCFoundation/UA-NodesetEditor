@@ -6,7 +6,7 @@ import './styles/GridPager.scss';
 
 const CLASS_NAME = "GridPager";
 
-function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage)
+function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage, hasNextPage, hasPreviousPage)
     //-------------------------------------------------------------------
     // Region: Initialization
     //-------------------------------------------------------------------
@@ -18,6 +18,9 @@ function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage)
     const maxPageDisplay = 8;
 
     const raiseOnChangePage = props.onChangePage;
+
+    // Support for cursor-based pagination
+    const { hasNextPage, hasPreviousPage } = props;
 
     //-------------------------------------------------------------------
     // Region: Event Handling of child component events
@@ -105,14 +108,25 @@ function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage)
         if (pager == null) return;
 
         var result = [];
+        
+        // For cursor-based pagination, modify the navigation logic
+        const canGoPrevious = hasPreviousPage !== undefined ? hasPreviousPage : props.currentPage > 1;
+        const canGoNext = hasNextPage !== undefined ? hasNextPage : props.currentPage < pager.totalPages;
+        
         if (pager.totalPages > minimuPageSize) {
             //add first, previous item
-            result.push(<Pagination.Item key="first" title="Go to first page" active={pager.currentPage === 1} onClick={() => onPageClick(1)}>{firstCaption}</Pagination.Item>);
-            result.push(<Pagination.Item key="previous" title="Go to previous page" active={pager.currentPage === 1} onClick={() => onPageClick(pager.currentPage - 1)}>{previousCaption}</Pagination.Item>);
+            result.push(<Pagination.Item key="first" title="Go to first page" disabled={!canGoPrevious || props.currentPage === 1} onClick={() => onPageClick(1)}>{firstCaption}</Pagination.Item>);
+            result.push(<Pagination.Item key="previous" title="Go to previous page" disabled={!canGoPrevious} onClick={() => onPageClick(pager.currentPage - 1)}>{previousCaption}</Pagination.Item>);
         }
+        
         //add individual pages 
         var maxHalfway = Math.floor(maxPageDisplay / 2);
-        for (let pageNum = 1; pageNum <= pager.totalPages; pageNum++) {
+        
+        // For cursor-based pagination, limit the page range
+        const pageLimit = (hasNextPage !== undefined || hasPreviousPage !== undefined) ? 
+            Math.min(pager.totalPages, props.currentPage + 2) : pager.totalPages;
+            
+        for (let pageNum = 1; pageNum <= pageLimit; pageNum++) {
             //if we have more than max pages display...16 pages, we only display 16 around the current page
             if (pager.totalPages <= maxPageDisplay || (pageNum > pager.currentPage - maxHalfway && (pageNum < pager.currentPage + maxHalfway))) {
                 result.push(
@@ -132,8 +146,11 @@ function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage)
         }
         //add next, last item
         if (pager.totalPages > minimuPageSize) {
-            result.push(<Pagination.Item key="next" title="Go to next page" active={pager.currentPage === pager.totalPages} onClick={() => onPageClick(pager.currentPage + 1)}>{nextCaption}</Pagination.Item>);
-            result.push(<Pagination.Item key="last" title="Go to last page" active={pager.currentPage === pager.totalPages} onClick={() => onPageClick(pager.totalPages)}>{lastCaption}</Pagination.Item>);
+            result.push(<Pagination.Item key="next" title="Go to next page" disabled={!canGoNext} onClick={() => onPageClick(pager.currentPage + 1)}>{nextCaption}</Pagination.Item>);
+            // For cursor-based pagination, don't show "last" if we don't know the total
+            if (hasNextPage === undefined && hasPreviousPage === undefined) {
+                result.push(<Pagination.Item key="last" title="Go to last page" disabled={!canGoNext || props.currentPage === pager.totalPages} onClick={() => onPageClick(pager.totalPages)}>{lastCaption}</Pagination.Item>);
+            }
         }
         return (<div className="mr-auto mb-3 mb-lg-0"><Pagination >{result}</Pagination></div>);
     }
@@ -168,6 +185,21 @@ function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage)
         )
     }
 
+    // Helper to show pagination info
+    const renderPaginationInfo = () => {
+        if (hasNextPage !== undefined || hasPreviousPage !== undefined) {
+            // Cursor-based pagination info
+            return (
+                <div className="pagination-info small text-muted mt-2">
+                    Page {props.currentPage}
+                    {props.itemCount > 0 && <span> • {props.itemCount} total items</span>}
+                    {hasNextPage && <span> • More available</span>}
+                </div>
+            );
+        }
+        return null;
+    }
+
     //-------------------------------------------------------------------
     // Region: Render 
     //-------------------------------------------------------------------
@@ -175,9 +207,9 @@ function GridPager(props) { //(currentPage, pageSize, itemCount, onChangePage)
         <div className="pagination-wrapper mt-3 mt-lg-4 d-block d-lg-flex">
             {renderPageItems()}
             {renderPageSizeOptions(props.pageSize)}
+            {renderPaginationInfo()}
         </div>
     )
 }
 
 export default GridPager;
-

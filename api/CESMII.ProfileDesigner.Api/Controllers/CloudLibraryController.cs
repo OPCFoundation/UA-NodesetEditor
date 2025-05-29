@@ -79,11 +79,8 @@ namespace CESMII.ProfileDesigner.Api.Controllers
                     model.Take, 
                     model.Cursor, 
                     model.PageBackwards, 
-                    additionalProperty: new AdditionalProperty 
-                    { 
-                        Name = ICloudLibDal<CloudLibProfileModel>.strCESMIIUserInfo, 
-                        Value = $"PD{base.DalUserToken.UserId}" 
-                    });
+                    null
+                );
 
                 if (pendingNodeSetsResult == null)
                 {

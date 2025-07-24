@@ -86,6 +86,7 @@ DROP TABLE IF EXISTS public.app_log;
 CREATE TABLE public.app_log
 (
     id SERIAL PRIMARY KEY,
+    created timestamp with time zone NULL DEFAULT now(),
     application character varying(50) COLLATE pg_catalog."default" NULL,
     host_name character varying(100) COLLATE pg_catalog."default" NULL,
     message varchar COLLATE pg_catalog."default" NULL,
@@ -95,8 +96,7 @@ CREATE TABLE public.app_log
     type character varying(128) COLLATE pg_catalog."default" NULL,
     call_site character varying(128) COLLATE pg_catalog."default" NULL,
     inner_exception varchar COLLATE pg_catalog."default" NULL,
-    stack_trace varchar COLLATE pg_catalog."default" NULL,
-    created timestamp with time zone NULL DEFAULT now()
+    stack_trace varchar COLLATE pg_catalog."default" NULL
 )
 
 TABLESPACE pg_default;

@@ -12,13 +12,16 @@
 
   <ItemGroup>
 	<ProjectReference Include="..\CESMII.OpcUa.CloudLibraryResolver.DependencyInjection\CESMII.OpcUa.CloudLibraryResolver.DependencyInjection.csproj" />
+	<ProjectReference Include="..\CESMII.OpcUa.NodeSetImporter\CESMII.OpcUa.NodeSetImporter.csproj" />
+	<ProjectReference Include="..\CESMII.OpcUa.NodeSetModel.Factory.Opc\CESMII.OpcUa.NodeSetModel.Factory.Opc.csproj" />
+	<ProjectReference Include="..\CESMII.OpcUa.NodeSetModel\CESMII.OpcUa.NodeSetModel.csproj" />
 	<ProjectReference Include="..\CESMII.ProfileDesigner.Api.Shared\CESMII.ProfileDesigner.Api.Shared.csproj" />
 	<ProjectReference Include="..\CESMII.ProfileDesigner.Common\CESMII.ProfileDesigner.Common.csproj" />
     <ProjectReference Include="..\CESMII.ProfileDesigner.DAL\CESMII.ProfileDesigner.DAL.csproj" />
 	<ProjectReference Include="..\..\common\CESMII.Common.CloudLibClient\CESMII.Common.CloudLibClient.csproj" />
-	<PackageReference Include="CESMII.OpcUa.NodeSetModel" Version="2.1.2" />
+	<!--<PackageReference Include="CESMII.OpcUa.NodeSetModel" Version="2.1.2" />
 	<PackageReference Include="CESMII.OpcUa.NodeSetModel.Factory.Opc" Version="2.1.2" />
-	<PackageReference Include="CESMII.OpcUa.NodeSetImporter" Version="2.1.2" />
+	<PackageReference Include="CESMII.OpcUa.NodeSetImporter" Version="2.1.2" />-->
 	<!--<PackageReference Include="CESMII.OpcUa.NodeSetModel.EF" Version="1.0.13" />-->
     <PackageReference Include="System.IO.Packaging" Version="9.0.4" />
   </ItemGroup>

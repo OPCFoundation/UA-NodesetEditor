@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="CESMII.OpcUa.NodeSetModel" Version="2.1.2" />
+    <!--<PackageReference Include="CESMII.OpcUa.NodeSetModel" Version="2.1.2" />-->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
 
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
@@ -65,6 +65,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\common\CESMII.Common.SelfServiceSignUp\CESMII.Common.SelfServiceSignUp.csproj" />
+    <ProjectReference Include="..\CESMII.OpcUa.NodeSetModel\CESMII.OpcUa.NodeSetModel.csproj" />
     <ProjectReference Include="..\CESMII.ProfileDesigner.OpcUa\CESMII.ProfileDesigner.OpcUa.csproj" />
     <ProjectReference Include="..\CESMII.ProfileDesigner.Api.Shared\CESMII.ProfileDesigner.Api.Shared.csproj" />
     <ProjectReference Include="..\CESMII.ProfileDesigner.Common\CESMII.ProfileDesigner.Common.csproj" />
@@ -99,5 +100,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://4lando.github.io/lando-spec/landofile-spec.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

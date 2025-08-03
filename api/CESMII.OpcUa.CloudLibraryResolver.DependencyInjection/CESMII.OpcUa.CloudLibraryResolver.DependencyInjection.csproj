@@ -22,16 +22,18 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="CESMII.OpcUa.NodeSetModel" Version="2.1.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
+		<!--<PackageReference Include="CESMII.OpcUa.NodeSetModel" Version="2.1.2" />
+    <PackageReference Include="CESMII.OpcUa.NodeSetImporter" Version="2.1.2" />-->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
-		<PackageReference Include="CESMII.OpcUa.NodeSetImporter" Version="2.1.2" />
 		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.376.213" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\CESMII.OpcUa.CloudLibraryResolver\CESMII.OpcUa.CloudLibraryResolver.csproj" />
+	  <ProjectReference Include="..\CESMII.OpcUa.NodeSetImporter\CESMII.OpcUa.NodeSetImporter.csproj" />
+	  <ProjectReference Include="..\CESMII.OpcUa.NodeSetModel\CESMII.OpcUa.NodeSetModel.csproj" />
 	</ItemGroup>
 
 </Project>

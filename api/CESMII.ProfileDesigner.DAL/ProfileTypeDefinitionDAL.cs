@@ -1149,6 +1149,7 @@
             }
 
             var referenceId = source.RelatedReferenceId;
+            System.Diagnostics.Debug.WriteLine($"MapToEntityCompositionInternal(1152): ReferenceId={referenceId} ");
 
             if (source.IntermediateObjectId != null)
             {
@@ -1215,7 +1216,8 @@
                 if (!string.IsNullOrEmpty(customReference))
                 {
                     // Some object types (FolderType) use special references (Organizes) for compositions
-                    referenceId = customReference; 
+                    referenceId = customReference;
+                    System.Diagnostics.Debug.WriteLine($"MapToEntityCompositionInternal(1220): Maybe changed to ReferenceId={referenceId} ");
                 }
             }
             else

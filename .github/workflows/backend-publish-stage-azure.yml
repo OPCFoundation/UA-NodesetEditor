@@ -41,11 +41,11 @@ env:
   PUBLISH_FOLDER_RELATIVE: "./publish"
   PUBLISH_FOLDER: "/publish"
   # set this to the .NET core version to use
-  NETCORE_VERSION: "6.0.x"
+  NETCORE_VERSION: "9.0.x"
 
 jobs:
   build:
-    name: Build and Deploy .NET6 Web API
+    name: Build and Deploy .NET9 Web API
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
         run: dotnet publish --configuration Staging --output ${{ env.PUBLISH_FOLDER_RELATIVE }}
         working-directory: ${{env.PROJECT_DIRECTORY}}
       - name: 'Deploy to Azure WebApp'
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v4
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_PROFILEDESIGNER_BACK_STAGE_PUBLISHSETTINGS }}

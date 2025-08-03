@@ -34,7 +34,7 @@ env:
   BUILD_OUTPUT_DIRECTORY: './frontend/build'      
   WORKING_DIRECTORY: 'frontend'   
   # set this to the node version to use
-  NODE_VERSION: '16.x'                
+  NODE_VERSION: '22.x'
 
 jobs:
   Build-and-Deploy-FrontEnd:

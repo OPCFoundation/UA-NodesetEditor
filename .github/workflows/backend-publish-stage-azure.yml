@@ -65,7 +65,7 @@ jobs:
         run: dotnet publish --configuration Staging --output ${{ env.PUBLISH_FOLDER_RELATIVE }}
         working-directory: ${{env.PROJECT_DIRECTORY}}
       - name: 'Deploy to Azure WebApp'
-        uses: azure/webapps-deploy@v4
+        uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_PROFILEDESIGNER_BACK_STAGE_PUBLISHSETTINGS }}

@@ -1,0 +1,86 @@
+name: Profile Designer - Deploy to Azure
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - migrate-to-v18
+
+env:
+  # set this to your application's name
+  AZURE_WEBAPP_NAME: 'opcf-profiledesigner'    
+  # set this to the path to your solution file, defaults to the repository root (this is the folder in the git repo)
+  SOLUTION_DIRECTORY: './'      
+  # set this to the path to your web app project, defaults to the repository root (this is the folder in the git repo)
+  BACKEND_DIRECTORY: './api/CESMII.ProfileDesigner.Api'      
+  # set this to the path to your web app project, defaults to the repository root (this is the folder in the git repo)
+  FRONTEND_DIRECTORY: './frontend'      
+  # Solution file to use
+  SOLUTION_FILE: 'CESMII.ProfileDesigner.sln'      
+  # Project file to use
+  PROJECT_NAME: 'CESMII.ProfileD'      
+  PUBLISH_FOLDER_RELATIVE: "./publish"
+  PUBLISH_FOLDER: "/publish"
+  # set this to the .NET core version to use
+  NETCORE_VERSION: "9.0.x"
+  # set this to the node version to use
+  NODE_VERSION: '21.x' 
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Setup Node.js to build React frontend
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    # Setup .NET SDK
+    - name: Setup .NET 9.0 SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.NETCORE_VERSION }}
+            
+    # Build React frontend
+    - name: Build React app
+      working-directory: ${{ env.FRONTEND_DIRECTORY }}
+      run: |
+        npm install
+        npm run build
+        
+    # Copy React build output into ASP.NET wwwroot (inside backend directory)
+    - name: Create wwwroot if missing
+      run: mkdir -p ${{ env.BACKEND_DIRECTORY }}/wwwroot
+
+    - name: Copy React build to ASP.NET wwwroot
+      run: |
+        rm -rf ${{ env.BACKEND_DIRECTORY }}/wwwroot/*
+        cp -r ${{ env.FRONTEND_DIRECTORY }}/dist/* ${{ env.BACKEND_DIRECTORY }}/wwwroot/
+
+    # Publish ASP.NET Core app (includes React files)
+    - name: Publish ASP.NET Core app
+      working-directory: ${{ env.BACKEND_DIRECTORY }}
+      run: dotnet publish -c Release -o ../../publish
+
+    # Deploy to Azure Web App
+    - name: Verify deploy folder contents
+      run: ls -R ./publish
+ 
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        slot-name: 'production'
+        package: ./publish
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      env:
+        AZURE_HTTP_USER_AGENT: 'GitHubActions'

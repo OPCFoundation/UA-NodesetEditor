@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{B6529603
 		.github\workflows\frontend-publish-azure.yml = .github\workflows\frontend-publish-azure.yml
 		.github\workflows\frontend-publish-stage-azure.yml = .github\workflows\frontend-publish-stage-azure.yml
 		LICENSE = LICENSE
+		.github\workflows\publish-azure.yml = .github\workflows\publish-azure.yml
 		README.md = README.md
 		.github\workflows\sonar-cloud-scan-stage.yml = .github\workflows\sonar-cloud-scan-stage.yml
 		.github\workflows\sonar-cloud-scan.yml = .github\workflows\sonar-cloud-scan.yml

@@ -41,11 +41,11 @@ env:
   PUBLISH_FOLDER_RELATIVE: "./publish"
   PUBLISH_FOLDER: "/publish"
   # set this to the .NET core version to use
-  NETCORE_VERSION: "6.0.x"
+  NETCORE_VERSION: "9.0.x"
 
 jobs:
   build:
-    name: Build and Deploy .NET6 Web API
+    name: Build and Deploy .NET 9.0 Web API to Staging
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

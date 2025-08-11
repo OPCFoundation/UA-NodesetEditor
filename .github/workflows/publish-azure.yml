@@ -37,10 +37,10 @@ jobs:
         fetch-depth: 0    # fetch full history (optional, but often recommended for submodules
 
     # Setup Node.js to build React frontend
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ env.NODE_VERSION }}
+    # - name: Setup Node.js
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: ${{ env.NODE_VERSION }}
         
     # Setup .NET SDK
     - name: Setup .NET 9.0 SDK
@@ -49,20 +49,20 @@ jobs:
         dotnet-version: ${{ env.NETCORE_VERSION }}
             
     # Build React frontend
-    - name: Build React app
-      working-directory: ${{ env.FRONTEND_DIRECTORY }}
-      run: |
-        npm install
-        npm run build
+    # - name: Build React app
+    #   working-directory: ${{ env.FRONTEND_DIRECTORY }}
+    #   run: |
+    #     npm install
+    #     npm run build
         
     # Copy React build output into ASP.NET wwwroot (inside backend directory)
     - name: Create wwwroot if missing
       run: mkdir -p ${{ env.BACKEND_DIRECTORY }}/wwwroot
 
-    - name: Copy React build to ASP.NET wwwroot
-      run: |
-        rm -rf ${{ env.BACKEND_DIRECTORY }}/wwwroot/*
-        cp -r ${{ env.FRONTEND_DIRECTORY }}/dist/* ${{ env.BACKEND_DIRECTORY }}/wwwroot/
+    # - name: Copy React build to ASP.NET wwwroot
+    #   run: |
+    #     rm -rf ${{ env.BACKEND_DIRECTORY }}/wwwroot/*
+    #     cp -r ${{ env.FRONTEND_DIRECTORY }}/dist/* ${{ env.BACKEND_DIRECTORY }}/wwwroot/
 
     # Publish ASP.NET Core app (includes React files)
     - name: Publish ASP.NET Core app

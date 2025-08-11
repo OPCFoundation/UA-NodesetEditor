@@ -211,6 +211,9 @@ namespace CESMII.ProfileDesigner.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Allow use of static files.
+            app.UseStaticFiles();
+
             app.Use(async (context, next) =>
             {
                 context.Response.OnStarting(o => {
@@ -233,6 +236,7 @@ namespace CESMII.ProfileDesigner.Api
             {
                 app.UseHsts();
             }
+
             app.UseOpcUaImporter();
             app.UseHttpsRedirection();
 
@@ -247,9 +251,6 @@ namespace CESMII.ProfileDesigner.Api
             app.UseMiddleware<UserAzureADMapping>();
 
             app.UseAuthorization();
-
-            // Allow use of static files.
-            app.UseStaticFiles();
 
             // https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware?view=aspnetcore-2.2
             app.UseResponseCaching();

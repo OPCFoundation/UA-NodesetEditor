@@ -128,6 +128,10 @@
         {
             return dal.Where(predicate, userToken, null, 1, false, verbose)?.Data?.FirstOrDefault();
         }
+        public static List<TModel> GetAllByFunc<TEntity, TModel>(this IDal<TEntity, TModel> dal, Expression<Func<TEntity, bool>> predicate, UserToken userToken, bool verbose) where TEntity : AbstractEntity where TModel : AbstractModel
+        {
+            return dal.Where(predicate, userToken, null, null, false, verbose)?.Data;
+        }
     }
 
 }

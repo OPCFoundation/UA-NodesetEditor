@@ -320,7 +320,7 @@ namespace CESMII.ProfileDesigner.DAL.Utils
             //Recursive - Parent-child are types pointing to themselves so that should be permitted.  
             //compositions can only derive from BaseObjectType - get BaseObjectType profile's dependencies and trim down the
             //list of the compositions if any of these are in the final dependencies list
-            var compRoot = _dal.GetByFunc(
+            var compRoot = _dal.GetAllByFunc(
                 x => x.Name.ToLower().Equals(_config.ProfilesSettings.ReservedProfileNames.CompositionRootProfileName.ToLower()),
                 userToken, false);
             var orderBys = new List<OrderBySimple>() {
@@ -330,8 +330,21 @@ namespace CESMII.ProfileDesigner.DAL.Utils
                 new OrderBySimple() { FieldName = "profile_publish_date" } ,
                 new OrderBySimple() { FieldName = "name" }
             };
-            var result = this.GetDescendants(compRoot.ID.Value, userToken, true, true, orderBys).Data;
-            return result;
+            List<ProfileTypeDefinitionSimpleModel> lResult = new();
+            foreach (var comp in compRoot)
+            {
+                var abatch = this.GetDescendants(comp.ID.Value, userToken, true, true, orderBys).Data;
+                lResult.AddRange(abatch);
+            }
+
+            int iItem = 1;
+            int count = lResult.Count;
+            foreach (ProfileTypeDefinitionSimpleModel xx in lResult)
+            {
+                System.Diagnostics.Debug.WriteLine($"BuildCompositionLookup: {iItem}/{count}:\tName:{xx.Name}\tModelUri:{xx.Profile.Namespace}");
+                iItem++;
+            }
+            return lResult;
         }
 
         public List<ProfileTypeDefinitionSimpleModel> BuildVariableTypeLookup(UserToken userToken)

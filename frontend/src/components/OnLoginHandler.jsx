@@ -300,7 +300,7 @@ export const doLoginRedirect = async (instance, inProgress) => {
          prompt: 'select_account'  //always present the account selection - even if already logged in cached.
       };
 
-      instance.loginRedirect(loginRequest);
+      await instance.loginRedirect(loginRequest);
    }
 }
 
@@ -317,7 +317,7 @@ export const doCreateAccount = async (instance, inProgress) => {
          prompt: 'create'
       };
 
-      instance.loginRedirect(loginRequest);
+      await instance.loginRedirect(loginRequest);
    }
 }
 

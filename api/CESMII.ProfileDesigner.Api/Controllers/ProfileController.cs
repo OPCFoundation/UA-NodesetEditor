@@ -32,7 +32,8 @@ using CESMII.Common.CloudLibClient;
 
 namespace CESMII.ProfileDesigner.Api.Controllers
 {
-    [Authorize(Policy = nameof(PermissionEnum.UserAzureADMapped)), Route("api/[controller]")]
+    [Route("api/[controller]")]
+    [Authorize(Policy = nameof(PermissionEnum.UserAzureADMapped))]
     public class ProfileController : BaseController<ProfileController>
     {
         private readonly IDal<Profile, ProfileModel> _dal;
@@ -60,6 +61,8 @@ namespace CESMII.ProfileDesigner.Api.Controllers
             _svcImport = svcImport;
             _exporter = exporter;
             _cloudLibUtil = cloudLibUtil;
+
+            logger.LogInformation($"ProfileController created!");
         }
 
         [HttpPost, Route("GetByID")]

@@ -211,9 +211,6 @@ namespace CESMII.ProfileDesigner.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Allow use of static files.
-            app.UseStaticFiles();
-
             app.Use(async (context, next) =>
             {
                 context.Response.OnStarting(o => {
@@ -239,6 +236,8 @@ namespace CESMII.ProfileDesigner.Api
 
             app.UseOpcUaImporter();
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseDefaultFiles();
 
             app.UseRouting();
 
@@ -258,6 +257,9 @@ namespace CESMII.ProfileDesigner.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                // React SPA fallback for non-API routes
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }

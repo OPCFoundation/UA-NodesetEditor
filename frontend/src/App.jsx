@@ -21,8 +21,7 @@ import './App.scss';
 const CLASS_NAME = "App";
 
 function App() {
-   console.log('API URL:', import.meta.env.VITE_BASE_API_URL);
-
+   //console.log('API URL:', import.meta.env.VITE_BASE_API_URL);
    //console.log(generateLogMessageString(`init || ENV || ${import.meta.env.NODE_ENV}`, CLASS_NAME));
    //console.log(generateLogMessageString(`init || API || ${import.meta.env.VITE_BASE_API_URL}`, CLASS_NAME));
 

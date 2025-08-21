@@ -17,9 +17,9 @@
             get
             {
                 throw new System.Exception("Maybe Unused Code?");
-                var result = new GeneralConfig();
-                _configuration.GetSection("GeneralSettings").Bind(result);
-                return result;
+                //var result = new GeneralConfig();
+                //_configuration.GetSection("GeneralSettings").Bind(result);
+                //return result;
             }
         }
 
@@ -28,9 +28,9 @@
             get
             {
                 throw new System.Exception("Maybe Unused Code?");
-                var result = new PasswordConfig();
-                _configuration.GetSection("PasswordSettings").Bind(result);
-                return result;
+                //var result = new PasswordConfig();
+                //_configuration.GetSection("PasswordSettings").Bind(result);
+                //return result;
             }
         }
 
@@ -39,9 +39,9 @@
             get
             {
                 throw new System.Exception("Maybe Unused Code?");
-                var result = new CorsConfig();
-                _configuration.GetSection("CorsSettings").Bind(result);
-                return result;
+                //var result = new CorsConfig();
+                //_configuration.GetSection("CorsSettings").Bind(result);
+                //return result;
             }
         }
 
@@ -50,9 +50,9 @@
             get
             {
                 throw new System.Exception("Maybe Unused Code?");
-                var result = new AuthenticationConfig();
-                _configuration.GetSection("AuthenticationSettings").Bind(result);
-                return result;
+                //var result = new AuthenticationConfig();
+                //_configuration.GetSection("AuthenticationSettings").Bind(result);
+                //return result;
             }
         }
         

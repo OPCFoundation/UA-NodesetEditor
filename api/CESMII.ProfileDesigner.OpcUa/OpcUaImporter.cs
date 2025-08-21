@@ -640,7 +640,7 @@ namespace CESMII.ProfileDesigner.OpcUa
 #else
                 model.UpdateIndices();
 #endif
-                exportedNodeSet = UANodeSetModelExporter.ExportNodeSet(model, nodeSetModels, this.Aliases);
+                exportedNodeSet = UANodeSetModelExporter.ExportNodeSet(model, nodeSetModels, this._logger,this.Aliases);
             }
             // .Net6 changed the default to no-identation: https://github.com/dotnet/runtime/issues/64885
             string exportedNodeSetXml;

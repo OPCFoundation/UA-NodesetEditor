@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>.net6</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Staging</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -21,12 +21,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.4.371.86" />
-		<!--<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.CloudLib.Client" Version="*-*" />-->
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.376.235" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <!--<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.CloudLib.Client" Version="*-*" />-->
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="CESMII.OpcUa.NodeSetImporter" Version="1.0.13" />
+	  <PackageReference Include="CESMII.OpcUa.NodeSetImporter" Version="2.1.2" />
 	  <ProjectReference Include="..\..\common\Opc.Ua.Cloud.Library.Client\Opc.Ua.Cloud.Library.Client.csproj" />
 	</ItemGroup>
 

@@ -337,13 +337,13 @@ namespace CESMII.ProfileDesigner.DAL.Utils
                 lResult.AddRange(abatch);
             }
 
-            int iItem = 1;
-            int count = lResult.Count;
-            foreach (ProfileTypeDefinitionSimpleModel xx in lResult)
-            {
-                System.Diagnostics.Debug.WriteLine($"BuildCompositionLookup: {iItem}/{count}:\tName:{xx.Name}\tModelUri:{xx.Profile.Namespace}");
-                iItem++;
-            }
+            //int iItem = 1;
+            //int count = lResult.Count;
+            //foreach (ProfileTypeDefinitionSimpleModel xx in lResult)
+            //{
+            //    System.Diagnostics.Debug.WriteLine($"BuildCompositionLookup: {iItem}/{count}:\tName:{xx.Name}\tModelUri:{xx.Profile.Namespace}");
+            //    iItem++;
+            //}
             return lResult;
         }
 

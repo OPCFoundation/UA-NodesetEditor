@@ -433,6 +433,10 @@ CREATE TABLE public.profile
     xml_schema_uri character varying(400) COLLATE pg_catalog."default" NULL,
     --ua_standard_profile_id integer NULL,
     author_id integer NULL,
+    created timestamp with time zone,
+    created_by_id integer,
+    updated timestamp with time zone,
+    updated_by_id integer,
 	
 	-- Cloud Library meta data
 	cloud_library_id character varying(100)  NULL,

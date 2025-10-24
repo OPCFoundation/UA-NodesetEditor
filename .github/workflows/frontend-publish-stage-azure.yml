@@ -23,9 +23,7 @@ on:
   # but only for the dev branch
   push:
     branches:
-      - develop
-      - CO5/Develop
-      - PLY/Develop
+      - stage
 
 env:
   # set this to your application's name

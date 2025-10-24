@@ -9,9 +9,7 @@ on:
   # Trigger the workflow on push to a branch
   push:
     branches:
-      - develop
-      - CO5/Develop
-      - PLY/Develop
+      - stage
   
 env:
   # set this to the organization name, project key in Sonar

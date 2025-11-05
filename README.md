@@ -1,4 +1,4 @@
-<h1>Profile Designer</h1>
+<h1>UA Nodeset Editor (previous name: Profile Designer)</h1>
 <h2>Prerequisites</h2>
 <ul>
 <li>
